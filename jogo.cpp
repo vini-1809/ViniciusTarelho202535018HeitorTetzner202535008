@@ -50,11 +50,35 @@ void selecionarPalavra(char palavraResposta[], int qtdPalavras, char dicionario 
     strcat(palavraResposta,dicionario[indicePalavra]);
     return;
 }
+
+bool validarChute(char chute[]) {
+    int tam;
+    for (tam = 0; chute[tam] != '\0'; tam++) {
+        if (tam >= 6) {
+            return false;
+        }
+    }
+    if (tam < 6) {
+        return false;
+    }
+
+    return true;
+}
+
+void obterChute() {
+    char chute[8];
+    cin.getline(chute, 8);
+    validarChute(chute);
+}
+
 int main()
 {
+    cout << "Teste 1" << endl;
     char dicionario[qtdPalavraMaxima][tamanhoPalavraMaxima];
     int qtdPalavras = criarDicionario(dicionario, tamanhoPalavra);
     char palavraResposta [tamanhoPalavraMaxima];
     selecionarPalavra(palavraResposta, qtdPalavras, dicionario);
     cout<<palavraResposta<<endl;
+
+    return 0;
 }
