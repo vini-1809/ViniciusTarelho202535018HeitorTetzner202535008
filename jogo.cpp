@@ -10,6 +10,7 @@ using namespace std;
 #define tamanhoPalavra 6
 #define tamanhoPalavraMaxima 46
 #define qtdPalavraMaxima 20000
+#define MAXIMO_TENTATIVAS 10
 
 int qtdPalavras = 0;
 char dicionario[qtdPalavraMaxima][tamanhoPalavraMaxima];
@@ -67,12 +68,10 @@ bool validarChute(char chute[]) {
     int tam;
     for (tam = 1; chute[tam-1] != '\0'; tam++) {
         if (tam > 6) {
-            cout << "Entrada maior que 6" << endl;
             return false;
         }
     }
     if (tam < 6) {
-        cout << "Entrada menor que 6" << endl;
         return false;
     }
 
@@ -86,9 +85,8 @@ bool validarChute(char chute[]) {
 }
 
 
-void pegaChute()
+void pegaChute(char chute[])
 {
-    char chute[8];
     cin >> chute;
 
     // LIDA COM ERROS
@@ -103,12 +101,60 @@ void pegaChute()
 
 }
 
+bool palavraTemLetra(char palavra[], char letra) {
+    for (int i = 0; i < tamanhoPalavra; i ++) {
+        if (palavra[i] == letra) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+bool verificaChute(char chute[], char palavraResposta[]) {
+    bool acertou = true;
+    
+    for(int i = 0; i < tamanhoPalavra; i++) {
+        if (chute[i] == palavraResposta[i]) {
+            cout << "O";
+        }
+        else if (palavraTemLetra(palavraResposta, chute[i])) {
+            cout << "X";
+            acertou = false;
+        }
+        else {
+            cout << "_";
+            acertou = false;
+        }
+    }
+
+    cout << endl;
+
+    return acertou;
+}
+
 int main()
 {
     qtdPalavras = criarDicionario();
     char palavraResposta [tamanhoPalavraMaxima] = "";
     selecionarPalavra(palavraResposta);
     cout<<palavraResposta<<endl;
-    pegaChute();
+    bool acertou = false;
+    for (int i = 0; i < MAXIMO_TENTATIVAS; i++) {
+        char chute[8];
+        pegaChute(chute);
+        acertou = verificaChute(chute, palavraResposta);
+        if (acertou) {
+            break;
+        }
+    }
+
+    if (acertou) {
+        cout << "Pabens" << endl;
+    }
+    else {
+        cout << "Vc perdeu :(" << endl;
+    }
+
     return 0;
 }
