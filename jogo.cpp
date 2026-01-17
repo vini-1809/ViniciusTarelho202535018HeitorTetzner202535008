@@ -11,8 +11,11 @@ using namespace std;
 #define tamanhoPalavraMaxima 46
 #define qtdPalavraMaxima 20000
 
+int qtdPalavras = 0;
+char dicionario[qtdPalavraMaxima][tamanhoPalavraMaxima];
 
-int criarDicionario(char dicionario[][tamanhoPalavraMaxima], int tamPalavra)
+
+int criarDicionario()
 {
     int quantPalavras = 0;
     ifstream arquivo(pathArquivo);
@@ -25,12 +28,12 @@ int criarDicionario(char dicionario[][tamanhoPalavraMaxima], int tamPalavra)
             int tam;
             for(tam = 0; buffer[tam] != '\0'; tam++) 
             {
-                if (tam > tamPalavra) 
+                if (tam > tamanhoPalavra) 
                 {
                     break;
                 }
             }
-            if (tam == tamPalavra) 
+            if (tam == tamanhoPalavra) 
             {
                 strcat(dicionario[quantPalavras], buffer);
                 quantPalavras++;
@@ -41,7 +44,7 @@ int criarDicionario(char dicionario[][tamanhoPalavraMaxima], int tamPalavra)
     return quantPalavras;
 }
 
-void selecionarPalavra(char palavraResposta[], int qtdPalavras, char dicionario [][tamanhoPalavraMaxima])
+void selecionarPalavra(char palavraResposta[])
 {
     random_device semente;
     mt19937 gerador(semente());
@@ -49,6 +52,15 @@ void selecionarPalavra(char palavraResposta[], int qtdPalavras, char dicionario 
     int indicePalavra = distribuicao(gerador);
     strcat(palavraResposta,dicionario[indicePalavra]);
     return;
+}
+
+bool palavrasIguais(char p1[], char p2[]) {
+    for (int i = 0; i < 6; i++) {
+        if (p1[i] != p2[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool validarChute(char chute[]) {
@@ -62,23 +74,39 @@ bool validarChute(char chute[]) {
         return false;
     }
 
+    for (int i = 0; i < qtdPalavras; i ++) {
+        if (!palavrasIguais(chute, dicionario[i])) {
+            return false;
+        }
+    }
+
     return true;
 }
 
-void obterChute() {
+
+void pegaChute()
+{
     char chute[8];
-    cin.getline(chute, 8);
-    validarChute(chute);
+    cin >> chute;
+
+    // LIDA COM ERROS
+
+    while (cin.fail() || validarChute(chute) == -1)
+    {
+        cout<<"ENTRADA INVALIDA, DEVE SER UMA PALAVRA EXISTENTE COM 6 CARACTERES\n";
+        cin.clear();
+        cin.ignore(256,'\n');
+        cin >> chute;
+    }
+
 }
 
 int main()
 {
     cout << "Teste 1" << endl;
-    char dicionario[qtdPalavraMaxima][tamanhoPalavraMaxima];
-    int qtdPalavras = criarDicionario(dicionario, tamanhoPalavra);
-    char palavraResposta [tamanhoPalavraMaxima];
-    selecionarPalavra(palavraResposta, qtdPalavras, dicionario);
+    qtdPalavras = criarDicionario();
+    char palavraResposta [tamanhoPalavraMaxima] = "";
+    selecionarPalavra(palavraResposta);
     cout<<palavraResposta<<endl;
-
     return 0;
 }
