@@ -65,22 +65,24 @@ bool palavrasIguais(char p1[], char p2[]) {
 
 bool validarChute(char chute[]) {
     int tam;
-    for (tam = 0; chute[tam] != '\0'; tam++) {
-        if (tam >= 6) {
+    for (tam = 1; chute[tam-1] != '\0'; tam++) {
+        if (tam > 6) {
+            cout << "Entrada maior que 6" << endl;
             return false;
         }
     }
     if (tam < 6) {
+        cout << "Entrada menor que 6" << endl;
         return false;
     }
 
     for (int i = 0; i < qtdPalavras; i ++) {
-        if (!palavrasIguais(chute, dicionario[i])) {
-            return false;
+        if (palavrasIguais(chute, dicionario[i])) {
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 
 
@@ -91,7 +93,7 @@ void pegaChute()
 
     // LIDA COM ERROS
 
-    while (cin.fail() || validarChute(chute) == -1)
+    while (cin.fail() || validarChute(chute) == false)
     {
         cout<<"ENTRADA INVALIDA, DEVE SER UMA PALAVRA EXISTENTE COM 6 CARACTERES\n";
         cin.clear();
@@ -103,10 +105,10 @@ void pegaChute()
 
 int main()
 {
-    cout << "Teste 1" << endl;
     qtdPalavras = criarDicionario();
     char palavraResposta [tamanhoPalavraMaxima] = "";
     selecionarPalavra(palavraResposta);
     cout<<palavraResposta<<endl;
+    pegaChute();
     return 0;
 }
