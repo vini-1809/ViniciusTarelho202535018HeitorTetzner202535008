@@ -116,6 +116,7 @@ void pegaChute(char chute[],dicionario dicionario)
         cin.clear();
         cin.ignore(256,'\n');
         cin >> chute;
+        capitalizaPalavra(chute);
     }
 
 }
@@ -184,9 +185,9 @@ void jogo();
 void jogaNovamente()
 {
     cout << "Gostaria de Jogar Novamente? (digite s pra sim, qualquer outra coisa pra nao)"<<endl;
-    char r;
-    cin>>r;
-    if(r == 'S' || r == 's')
+    char r[3];
+    cin >> r;
+    if(r[1] == '\0' && (r[0] == 'S' || r[0] == 's'))
     {
         cout<<endl;
         jogo();
@@ -194,7 +195,7 @@ void jogaNovamente()
     else
     {
         cout<<"Até a proxima!"<<endl;
-        exit(0);
+        //exit(0);
     }
 
 }
@@ -202,7 +203,7 @@ void jogo()
 {
     dicionario dicionario;
     dicionario = criaDicionario(dicionario);
-    char palavraResposta [tamanhoPalavra + 1] = "";
+    char palavraResposta[tamanhoPalavra + 1] = "";
     selecionaPalavra(palavraResposta, dicionario);
     
     if (debugMode)
@@ -224,10 +225,10 @@ void jogo()
     }
 
     if (acertou) {
-        cout << "Parabens" << endl;
+        cout << "Parabens, você ganhou!" << endl;
     }
     else {
-        cout << "Vc perdeu :(" << endl;
+        cout << "Você perdeu, que pena!" << endl;
     }
     jogaNovamente();
 }
