@@ -12,7 +12,7 @@ using namespace std;
 #define tamanhoPalavraMaxima 47
 #define qtdPalavraMaxima 12000
 #define MAXIMO_TENTATIVAS 10
-#define debugMode true
+#define debugMode false
 
 struct dicionario {
     char listaPalavras[qtdPalavraMaxima][tamanhoPalavraMaxima];
