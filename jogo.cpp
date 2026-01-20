@@ -1,16 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <cctype>
+//#include <cctype>
 #include <random>
 #include <chrono>
 
 using namespace std;
 
+//Variáveis do Jogo
 #define pathArquivo "dicionario.txt"
 #define tamanhoPalavra 6
 #define tamanhoPalavraMaxima 47
-#define qtdPalavraMaxima 12000
+#define qtdPalavraMaxima 20000
 #define MAXIMO_TENTATIVAS 10
 
 struct dicionario {
@@ -21,11 +22,18 @@ struct dicionario {
 void capitalizaPalavra(char palavra[])
 {
     for (int i = 0; palavra[i] != '\0';i++)
-        palavra[i]= (char) toupper(palavra[i]);
+    {
+        if (palavra[i] >= 'a' && palavra[i] <= 'z')
+        {
+            palavra[i] = palavra[i] - 'a' + 'A'; // +32
+        }
+    }
+/*   for (int i = 0; palavra[i] != '\0';i++)
+        palavra[i]= (char) toupper(palavra[i]);*/
 }
 
 
-dicionario criarDicionario(dicionario dicionario)
+void criaDicionario(dicionario dicionario)
 {
     int qtdPalavras = 0;
     ifstream arquivo(pathArquivo);
@@ -45,28 +53,28 @@ dicionario criarDicionario(dicionario dicionario)
             }
             if (tam == tamanhoPalavra) 
             {
-                strcat(dicionario.listaPalavras[qtdPalavras], buffer);
-                qtdPalavras++;
+                strcat(dicionario.listaPalavras[quantPalavras], buffer);
+                quantPalavras++;
             }
         }
         arquivo.close();
         dicionario.qtdPalavras = qtdPalavras;
     }
-    return dicionario;
+    return;
 }
 
-void selecionarPalavra(char palavraResposta[],dicionario dicionario)
+void selecionaPalavra(char palavraResposta[])
 {
     random_device semente;
     mt19937 gerador(semente());
-    uniform_int_distribution distribuicao(1,dicionario.qtdPalavras);
+    uniform_int_distribution distribuicao(1,qtdPalavras);
     int indicePalavra = distribuicao(gerador);
-    strcat(palavraResposta,dicionario.listaPalavras[indicePalavra]);
+    strcat(palavraResposta,dicionario[indicePalavra]);
     capitalizaPalavra(palavraResposta);
     return;
 }
 
-bool palavrasIguais(char p1[], char p2[]) {
+bool verificaIgualdadePalavras(char p1[], char p2[]) {
     for (int i = 0; i < tamanhoPalavra; i++) {
         if (p1[i] != p2[i]) {
             return false;
@@ -75,7 +83,7 @@ bool palavrasIguais(char p1[], char p2[]) {
     return true;
 }
 
-bool validarChute(char chute[],dicionario dicionario) {
+bool validaChute(char chute[],dicionario dicionario) {
     int tam;
     for (tam = 1; chute[tam-1] != '\0'; tam++) {
         if (tam > tamanhoPalavra) {
@@ -87,7 +95,7 @@ bool validarChute(char chute[],dicionario dicionario) {
     }
 
     for (int i = 0; i < dicionario.qtdPalavras; i ++) {
-        if (palavrasIguais(chute, dicionario.listaPalavras[i])) {
+        if (verificaIgualdadePalavras(chute, dicionario.listaPalavras[i])) {
             return true;
         }
     }
@@ -101,9 +109,9 @@ void pegaChute(char chute[],dicionario dicionario)
 
     // LIDA COM ERROS
 
-    while (cin.fail() || !(validarChute(chute,dicionario)))
+    while (cin.fail() || !(validaChute(chute,dicionario)))
     {
-        cout<<"ENTRADA INVALIDA, DEVE SER UMA PALAVRA EXISTENTE COM " << tamanhoPalavra <<  " CARACTERES\n";
+        cout<<"ENTRADA INVALIDA, DEVE SER UMA PALAVRA EXISTENTE COM 6 CARACTERES\n";
         cin.clear();
         cin.ignore(256,'\n');
         cin >> chute;
@@ -112,7 +120,7 @@ void pegaChute(char chute[],dicionario dicionario)
 
 }
 
-bool palavraTemLetra(char palavra[], char letra) {
+bool verificaPalavraTemLetra(char palavra[], char letra) {
     for (int i = 0; i < tamanhoPalavra; i ++) {
         if (palavra[i] == letra) {
             return true;
@@ -123,8 +131,10 @@ bool palavraTemLetra(char palavra[], char letra) {
 }
 
 bool verificaChute(char chute[], char palavraResposta[]) {
-    char vetorImpresso[tamanhoPalavra+1] = {};
-    if (palavrasIguais(chute,palavraResposta))
+    
+    char vetorImpresso[tamanhoPalavra+1];
+
+    if (verificaIgualdadePalavras(chute,palavraResposta))
     {
         for (int i = 0; vetorImpresso[i] != '\0'; i++)
         {
@@ -133,9 +143,10 @@ bool verificaChute(char chute[], char palavraResposta[]) {
         return true;
     }
     else
-    {    
-        char chuteCopia[tamanhoPalavra+1] = {};
-        char palavraRespostaCopia[tamanhoPalavra+1] = {};
+    {
+        // As copias servem para retirarmos os pares 1 a 1 dos vetores sem modificar permanentemente a informação.
+        char chuteCopia[tamanhoPalavra+1];
+        char palavraRespostaCopia[tamanhoPalavra+1];
 
         for(int i = 0; i < tamanhoPalavra; i++) {
 
@@ -151,25 +162,54 @@ bool verificaChute(char chute[], char palavraResposta[]) {
         }
 
         for(int i = 0; i < tamanhoPalavra; i++) {
-             if (palavraTemLetra(palavraRespostaCopia, chuteCopia[i])) {
+             if (verificaPalavraTemLetra(palavraResposta, chute[i])) {
                 vetorImpresso[i] = 'X';
             }
         }
-        for (int i = 0; i < tamanhoPalavra; i++)
+        for (int i = 0; vetorImpresso != '\0'; i++)
             cout << vetorImpresso[i];
         cout<<endl;
         return false;
     }
 }
-void menu()
-{
-    dicionario dicionario = criarDicionario(dicionario);
-    char palavraResposta [tamanhoPalavra + 1] = "";
-    selecionarPalavra(palavraResposta, dicionario);
-    
-    cout<<palavraResposta<<endl;
 
+void logo()
+{
+    cout<<"----------------------------------------------------------------------"<<endl;
+    cout<<"                                                                      "<<endl;
+    cout<<"     TERMO VERSAO C++                                                 "<<endl;
+    cout<<"                                        feito por Vinicius e Heitor   "<<endl;
+    cout<<"----------------------------------------------------------------------"<<endl<<endl;
+}
+void jogarNovamente()
+{
+    cout << "Gostaria de Jogar Novamente? (digite s pra sim, qualquer outra coisa pra nao)"
+    char r;
+    cin>>r;
+    capitalizaPalavra(r);
+    if(r == 'S')
+    {
+        jogo();
+    }
+    else
+    {
+        cout<<"Até a proxima!"
+        exit[0];
+    }
+
+}
+void jogo()
+{
+    dicionario dicionario = criaDicionario();
+    char palavraResposta [tamanhoPalavra + 1] = "";
+    selecionaPalavra(palavraResposta);
+    
+    // cout<<palavraResposta<<endl;
+    
+    logo();
+    
     bool acertou = false;
+
     for (int i = 0; i < MAXIMO_TENTATIVAS; i++) {
         char chute[tamanhoPalavra + 1];
         pegaChute(chute,dicionario);
@@ -188,6 +228,6 @@ void menu()
 }
 int main()
 {
-    menu();
+    jogo();
     return 0;
 }
