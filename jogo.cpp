@@ -53,6 +53,7 @@ dicionario criaDicionario(dicionario dicionario)
             }
             if (tam == tamanhoPalavra) 
             {
+                capitalizaPalavra(buffer);
                 strcat(dicionario.listaPalavras[qtdPalavras], buffer);
                 qtdPalavras++;
             }
@@ -70,7 +71,6 @@ void selecionaPalavra(char palavraResposta[],dicionario dicionario)
     uniform_int_distribution distribuicao(1,dicionario.qtdPalavras);
     int indicePalavra = distribuicao(gerador);
     strcat(palavraResposta,dicionario.listaPalavras[indicePalavra]);
-    capitalizaPalavra(palavraResposta);
     return;
 }
 
@@ -106,6 +106,7 @@ bool validaChute(char chute[],dicionario dicionario) {
 void pegaChute(char chute[],dicionario dicionario)
 {
     cin >> chute;
+    capitalizaPalavra(chute);
 
     // LIDA COM ERROS
 
@@ -116,7 +117,6 @@ void pegaChute(char chute[],dicionario dicionario)
         cin.ignore(256,'\n');
         cin >> chute;
     }
-    capitalizaPalavra(chute);
 
 }
 
