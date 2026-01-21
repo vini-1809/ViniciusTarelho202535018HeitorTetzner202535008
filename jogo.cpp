@@ -14,7 +14,7 @@ using namespace std;
 #define MAXIMO_TENTATIVAS 10
 #define debugMode false
 
-struct dicionario {
+struct Dicionario {
     char listaPalavras[qtdPalavraMaxima][tamanhoPalavraMaxima];
     int qtdPalavras;
 };
@@ -33,7 +33,7 @@ void capitalizaPalavra(char palavra[])
 }
 
 
-dicionario criaDicionario(dicionario dicionario)
+Dicionario criaDicionario(Dicionario dicionario)
 {
     int qtdPalavras = 0;
     ifstream arquivo(pathArquivo);
@@ -64,7 +64,7 @@ dicionario criaDicionario(dicionario dicionario)
     return dicionario;
 }
 
-void selecionaPalavra(char palavraResposta[],dicionario dicionario)
+void selecionaPalavra(char palavraResposta[],Dicionario dicionario)
 {
     random_device semente;
     mt19937 gerador(semente());
@@ -83,7 +83,7 @@ bool palavrasIguais(char p1[], char p2[]) {
     return true;
 }
 
-bool validaChute(char chute[],dicionario dicionario) {
+bool validaChute(char chute[],Dicionario dicionario) {
     int tam;
     for (tam = 1; chute[tam-1] != '\0'; tam++) {
         if (tam > tamanhoPalavra) {
@@ -103,7 +103,7 @@ bool validaChute(char chute[],dicionario dicionario) {
 }
 
 
-void pegaChute(char chute[],dicionario dicionario)
+void pegaChute(char chute[],Dicionario dicionario)
 {
     cin >> chute;
     capitalizaPalavra(chute);
@@ -185,11 +185,13 @@ void jogo();
 void jogaNovamente()
 {
     cout << "Gostaria de Jogar Novamente? (digite s pra sim, qualquer outra coisa pra nao)"<<endl;
-    char r[3];
+    char r;
     cin >> r;
-    if(r[1] == '\0' && (r[0] == 'S' || r[0] == 's'))
+    if(r == 'S' || r == 's')
     {
         cout<<endl;
+        cin.clear();
+        cin.ignore(256, '\n');
         jogo();
     }
     else
@@ -199,9 +201,24 @@ void jogaNovamente()
     }
 
 }
+
+bool loopTentativas(Dicionario dicionario, char palavraResposta[]) {
+    bool acertou = false;
+    for (int i = 0; i < MAXIMO_TENTATIVAS; i++) {
+        char chute[tamanhoPalavra + 1];
+        pegaChute(chute,dicionario);
+        acertou = verificaChute(chute, palavraResposta);
+        if (acertou) {
+            break;
+        }
+    }
+
+    return acertou;
+}
+
 void jogo()
 {
-    dicionario dicionario;
+    Dicionario dicionario;
     dicionario = criaDicionario(dicionario);
     char palavraResposta[tamanhoPalavra + 1] = "";
     selecionaPalavra(palavraResposta, dicionario);
@@ -213,16 +230,7 @@ void jogo()
     
     logo();
     
-    bool acertou = false;
-
-    for (int i = 0; i < MAXIMO_TENTATIVAS; i++) {
-        char chute[tamanhoPalavra + 1];
-        pegaChute(chute,dicionario);
-        acertou = verificaChute(chute, palavraResposta);
-        if (acertou) {
-            break;
-        }
-    }
+    bool acertou = loopTentativas(dicionario, palavraResposta);
 
     if (acertou) {
         cout << "Parabens, você ganhou!" << endl;
